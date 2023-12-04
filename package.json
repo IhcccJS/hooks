@@ -1,0 +1,70 @@
+{
+  "name": "@ihccc/hooks",
+  "version": "0.0.1-alpha.1",
+  "description": "A base react-hooks library.",
+  "license": "MIT",
+  "main": "./lib/index.js",
+  "module": "./es/index.js",
+  "types": "./lib/index.d.ts",
+  "unpkg": "dist/hooks.min.js",
+  "files": [
+    "es",
+    "lib",
+    "dist"
+  ],
+  "scripts": {
+    "dev": "dumi dev",
+    "build": "father build",
+    "docs:build": "dumi build",
+    "build:watch": "father dev",
+    "doctor": "father doctor",
+    "lint": "npm run lint:es && npm run lint:css",
+    "lint:css": "stylelint \"{src,test}/**/*.{css,less}\"",
+    "lint:es": "eslint \"{src,test}/**/*.{js,jsx,ts,tsx}\"",
+    "prepublishOnly": "father doctor && npm run build",
+    "start": "npm run dev"
+  },
+  "lint-staged": {
+    "*.{md,json}": [
+      "prettier --write --no-error-on-unmatched-pattern"
+    ],
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --parser=typescript --write"
+    ]
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "authors": [
+    "ihccc-cn <lccc10588@gmail.com>"
+  ],
+  "peerDependencies": {
+    "react": ">=16.9.0",
+    "react-dom": ">=16.9.0"
+  },
+  "dependencies": {
+    "@ihccc/utils": "0.0.1-alpha.1",
+    "ahooks": "^3.7.5",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@babel/runtime": "^7.22.6",
+    "@types/lodash": "^4.14.191",
+    "@types/react": "^18.0.28",
+    "@umijs/lint": "^4.0.0",
+    "dumi": "^2.2.14",
+    "eslint": "^8.23.0",
+    "father": "^4.1.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}

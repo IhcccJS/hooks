@@ -1,0 +1,11 @@
+node_modules
+/dist
+/es
+/lib
+/umd
+/dist-hooks
+.dumi/tmp
+.dumi/tmp-test
+.dumi/tmp-production
+.DS_Store
+pnpm-lock.yaml
