@@ -11,10 +11,10 @@ group:
 <!-- 基本使用
 
 <code src="./demo/basic/index.jsx"></code> -->
-
+<!-- 
 常规列表
 
-<code src="./demo/list/index.jsx"></code>
+<code src="./demo/list/index.jsx"></code> -->
 
 <!-- 依赖请求
 

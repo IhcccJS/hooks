@@ -11,8 +11,8 @@
     "baseUrl": "./",
     "paths": {
       "@@/*": [".dumi/tmp/*"],
-      "@wowon/hooks": ["src"],
-      "@wowon/hooks/*": ["src/*", "*"]
+      "@ihccc/hooks": ["src"],
+      "@ihccc/hooks/*": ["src/*", "*"]
     },
     "outDir": "dist"
   },

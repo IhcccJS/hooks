@@ -1,6 +1,6 @@
 {
   "name": "@ihccc/hooks",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "description": "A base react-hooks library.",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -63,8 +63,6 @@
     "father": "^4.1.0",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
-    "prettier": "^2.7.1",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "prettier": "^2.7.1"
   }
 }
