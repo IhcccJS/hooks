@@ -4,21 +4,31 @@ import useApiHandler from './plugins/useApiHandler';
 import type { Service } from 'ahooks/es/useRequest/src/types';
 import type { IOptions } from './index.d';
 
+function margeParams(params: any[], defaultParams?: any) {
+  if (!Array.isArray(defaultParams)) defaultParams = [defaultParams];
+
+  const result: any[] = [];
+
+  params.forEach((item, index) => {
+    if (typeof item === 'object') {
+      result.push({ ...defaultParams[index], ...item });
+    } else {
+      result.push(item);
+    }
+  });
+
+  return result;
+}
+
 // auto, type, initialData, verify, format, message, onSuccess, onFail
-function useApi<TData, TParams extends any[]>(
-  service: Service<unknown, any[]>,
-  opts?: IOptions<TData, TParams>,
-) {
+function useApi<TData, TParams extends any[]>(service: Service<unknown, any[]>, opts?: IOptions<TData, TParams>) {
   const { auto, type, defaultParams, ...options } = opts || {};
 
   const request = useRequest(
     service,
     {
       manual: !auto,
-      defaultParams:
-        !defaultParams || Array.isArray(defaultParams)
-          ? defaultParams
-          : [defaultParams],
+      defaultParams: !defaultParams || Array.isArray(defaultParams) ? defaultParams : [defaultParams],
       ...(!type ? {} : config.dessert?.[type]),
       ...options,
       globalConfig: config,
@@ -28,10 +38,14 @@ function useApi<TData, TParams extends any[]>(
 
   return {
     ...request,
-    setData: useMemoizedFn(
-      (data?: TData | ((oldData?: TData) => TData | undefined)) =>
-        request.mutate(data),
-    ),
+    setData: request.mutate,
+    runAsync: useMemoizedFn((...params) => {
+      return request.runAsync(...margeParams(params, defaultParams));
+    }),
+    run: useMemoizedFn((...params) => {
+      request.run(...margeParams(params, defaultParams));
+    }),
+    runNext: () => {},
   };
 }
 

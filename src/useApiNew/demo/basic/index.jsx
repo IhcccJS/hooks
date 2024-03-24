@@ -8,12 +8,12 @@ function Demo() {
   // const [exec, setExec] = React.useState(false);
   const user = useApi(query, {
     // auto: exec,
-    // auto: true,
+    auto: true,
     // ready: exec,
-    ready: !!username,
+    // ready: !!username,
     initialData: { list: [] },
     // defaultParams: { username: 'I' },
-    paramsDeps: { username },
+    // paramsDeps: { username },
     verify: (...args) => {
       console.log('verify', ...args);
       return args[0].code === '0';
@@ -23,7 +23,10 @@ function Demo() {
       console.log('message', ...args);
       return args[1].message;
     },
-    format: (res) => res.data,
+    format: (res, data, params) => {
+      console.log('format', res, data, params);
+      return res.data;
+    },
     onPass: (...args) => {
       console.log('onPass', ...args);
     },
@@ -45,7 +48,9 @@ function Demo() {
     onSuccess: () => user.refresh(),
   });
 
-  console.log('🚀 Component Rendered!', user);
+  if (!window.userQuery) window.userQuery = user;
+
+  console.log('🚀 Component Rendered!', user, user.data);
 
   return (
     <div>
