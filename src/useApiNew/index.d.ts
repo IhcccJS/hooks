@@ -22,7 +22,7 @@ export interface IOptions<TData, TParams extends any[]> extends Options {
   paramsDeps?: TParams;
   globalConfig?: IConfig;
   verify?: (res: TData, config: IOptions) => boolean;
-  format?: (res: TData, data: TData, params: TParams) => any;
+  format?: (res: TData, params: TParams) => any;
   message?: (pass?: boolean, res: TData, payload: TParams) => string;
   onPass?: (res: TData, payload: TParams) => any;
   onFail?: (res: TData, payload: TParams) => any;
