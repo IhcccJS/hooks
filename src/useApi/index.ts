@@ -1,140 +1,66 @@
-import React from 'react';
-import { useUpdate, useMemoizedFn } from 'ahooks';
-import _apiConfig from './config';
-import { TApiService, TApiConfig } from './index.d';
+import { clearCache, useRequest, useMemoizedFn } from 'ahooks';
+import { config, setConfig } from './config';
+import useApiHandler from './plugins/useApiHandler';
+import type { Service } from 'ahooks/es/useRequest/src/types';
+import type { IOptions } from './index.d';
 
-function useApi(api: TApiService, config: TApiConfig) {
-  const apiConfig = _apiConfig.get({
-    ...config,
-    type: api.name?.replace('bound ', ''),
-  });
+function margeParams(params: any[], defaultParams?: any) {
+  if (!Array.isArray(defaultParams)) defaultParams = [defaultParams];
 
-  const { verify, format, message, onSuccess, onFail } = apiConfig;
+  const result: any[] = [];
 
-  // console.log("apiConfig: ", api.name, apiConfig);
-
-  const stateRef = React.useRef({
-    defaultParams: apiConfig.defaultParams,
-    params: {},
-    data: apiConfig.initialData,
-    loading: false,
-    error: null,
-  });
-
-  if (config?.params) stateRef.current.params = config?.params;
-
-  const stateDependencies = React.useRef({
-    error: false,
-    data: false,
-    loading: false,
-  });
-
-  const update = useUpdate();
-
-  const request = useMemoizedFn(async () => {
-    if (stateRef.current.loading) return;
-
-    const onBefore = _apiConfig.config.get('onBefore');
-    const onAfter = _apiConfig.config.get('onAfter');
-    const messageType = _apiConfig.config.get('messageType');
-    const onMessage = _apiConfig.config.get('onMessage');
-
-    const payload = Object.assign(
-      {},
-      stateRef.current.defaultParams,
-      stateRef.current.params,
-    );
-
-    onBefore && onBefore(payload);
-
-    try {
-      stateRef.current.loading = true;
-      if (stateDependencies.current.loading) update();
-
-      const response = await api(payload);
-
-      stateRef.current.loading = false;
-      const verifyFn = verify || _apiConfig.config.get('verify');
-      const pass = !verifyFn ? !!response : verifyFn(response, apiConfig);
-
-      if (pass) {
-        const result =
-          (!format ? response : await format(response, payload)) ||
-          apiConfig.initialData;
-        stateRef.current.data = result;
-        onSuccess && onSuccess(result);
-      } else {
-        onFail && onFail(response);
-      }
-
-      const tipInfo = !message ? false : message(pass, response, payload);
-      if (tipInfo) onMessage?.(tipInfo, pass ? messageType[0] : messageType[1]);
-    } catch (error) {
-      const { onError } = apiConfig;
-      stateRef.current.error = error as null;
-      onMessage?.(error, messageType[2]);
-      onError && onError(error);
+  params.forEach((item, index) => {
+    if (typeof item === 'object') {
+      result.push({ ...defaultParams[index], ...item });
+    } else {
+      result.push(item);
     }
-
-    onAfter && onAfter();
-
-    update();
   });
 
-  // 直接修改
-  const setData = React.useCallback((data: any) => {
-    stateRef.current.data =
-      typeof data === 'function' ? data(stateRef.current.data) : data;
-    update();
-  }, []);
+  return result;
+}
 
-  // 执行请求
-  const run = React.useCallback(
-    async (nextParams?: any) => {
-      stateRef.current.params = Object.assign({}, nextParams);
-      return await request();
+// auto, type, initialData, verify, format, message, onPass, onFail
+// 回调顺序：onBefore -> (onSuccess -> verify -> (message -> onMessage -> format -> onPass) / onFail) / (onError -> onMessage) -> onFinally
+function useApi<TData, TParams extends any[]>(service: Service<unknown, any[]>, opts?: IOptions<TData, TParams>) {
+  const { auto, type, defaultParams, ...options } = opts || {};
+
+  const request = useRequest(
+    service,
+    {
+      manual: !auto,
+      defaultParams: !defaultParams || Array.isArray(defaultParams) ? defaultParams : [defaultParams],
+      ...(!type ? {} : config.dessert?.[type]),
+      ...options,
+      globalConfig: config,
     },
-    [request],
+    [useApiHandler],
   );
 
-  const refresh = React.useCallback(async () => {
-    return await request();
-  }, [request]);
-
-  React.useEffect(() => {
-    if (apiConfig.auto) {
-      run();
-    }
-  }, [apiConfig.auto, ...(config?.deps || [])]);
-
   return {
-    run,
-    // once, 仅执行一次
-    refresh,
-    setData,
-    mutate: setData,
-    get params() {
-      return Object.assign(
-        {},
-        stateRef.current.defaultParams,
-        stateRef.current.params,
-      );
+    ...request,
+    setData: request.mutate,
+    run: useMemoizedFn((...params) => {
+      if (!!options.cacheKey) clearCache(options.cacheKey);
+      return request.run(...margeParams(params, defaultParams));
+    }),
+    runAsync: useMemoizedFn((...params) => {
+      if (!!options.cacheKey) clearCache(options.cacheKey);
+      return request.runAsync(...margeParams(params, defaultParams));
+    }),
+    refresh: (...args: any[]) => {
+      if (!!options.cacheKey) clearCache(options.cacheKey);
+      // @ts-ignore
+      return request.refresh(...args);
     },
-    get error() {
-      stateDependencies.current.data = true;
-      return stateRef.current.error;
-    },
-    get data() {
-      stateDependencies.current.data = true;
-      return stateRef.current.data;
-    },
-    get loading() {
-      stateDependencies.current.loading = true;
-      return stateRef.current.loading;
+    refreshAsync: (...args: any[]) => {
+      if (!!options.cacheKey) clearCache(options.cacheKey);
+      // @ts-ignore
+      return request.refreshAsync(...args);
     },
   };
 }
 
-useApi.setConfig = _apiConfig.set;
+useApi.setConfig = setConfig;
 
 export default useApi;

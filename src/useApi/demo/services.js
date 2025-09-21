@@ -13,8 +13,7 @@ const initData = [
     phone: '11223389',
     brithday: '2009-12-01',
     address: '比奇堡',
-    description:
-      '他是一只粉红色的海星，说话嗓音粗，头脑简单，四肢发达，海绵宝宝的好朋友。',
+    description: '他是一只粉红色的海星，说话嗓音粗，头脑简单，四肢发达，海绵宝宝的好朋友。',
   },
   {
     avatar: '/hmbb.jpg',
