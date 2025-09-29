@@ -1,5 +1,3 @@
-import React from 'react';
-
 import type { IPlugin, IConfig } from '../index.d';
 
 const useApiHandler: IPlugin<any, any[]> = (fetchInstance, fetchOptions) => {
