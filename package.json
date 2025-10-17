@@ -1,6 +1,6 @@
 {
   "name": "@ihccc/hooks",
-  "version": "0.0.1-local.1",
+  "version": "0.1.0",
   "description": "A base react-hooks library.",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -39,7 +39,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "registry": "http://127.0.0.1:4873/"
+    "registry": "https://registry.npmjs.org/"
   },
   "authors": [
     "ihccc-cn <lccc10588@gmail.com>"
@@ -48,8 +48,8 @@
     "@ihccc/utils": "^0.1.*",
     "ahooks": "^3.7.5",
     "lodash": "^4.17.21",
-    "react": "^16.9",
-    "react-dom": "^16.9"
+    "react": "^18.2",
+    "react-dom": "^18.2"
   },
   "devDependencies": {
     "@babel/runtime": "^7.22.6",
