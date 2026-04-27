@@ -37,10 +37,6 @@
       "prettier --parser=typescript --write"
     ]
   },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
   "authors": [
     "ihccc-cn <lccc10588@gmail.com>"
   ],
